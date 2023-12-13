@@ -11037,3 +11037,8 @@ header.masthead h1, header.masthead .h1 {
   background-color: black;
   color: white;
 }
+
+.highlight {
+  background-color: blue;
+  font-weight: bold;
+}
