@@ -6,6 +6,72 @@
 //
 // Scripts
 // 
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('searchInput');
+
+    searchInput.addEventListener('input', function () {
+        const searchTerm = searchInput.value.trim().toLowerCase();
+
+        if (searchTerm === '') {
+            clearHighlights();
+            return;
+        }
+
+        const paragraphs = document.querySelectorAll('body p');
+        let firstMatchedParagraph = null;
+
+        paragraphs.forEach(function (paragraph) {
+            const paragraphText = paragraph.innerText.toLowerCase();
+            const matches = getMatches(paragraphText, searchTerm);
+
+            if (matches.length > 0 && !firstMatchedParagraph) {
+                firstMatchedParagraph = paragraph;
+            }
+
+            if (matches.length > 0) {
+                highlightMatches(paragraph, matches);
+            } else {
+                clearHighlights(paragraph);
+            }
+        });
+
+        if (firstMatchedParagraph) {
+            centerInViewport(firstMatchedParagraph);
+        }
+    });
+
+    function getMatches(text, searchTerm) {
+        const regex = new RegExp(searchTerm, 'gi');
+        return text.match(regex) || [];
+    }
+
+    function highlightMatches(paragraph, matches) {
+        const originalText = paragraph.innerText;
+        const highlightedText = originalText.replace(new RegExp(`(${matches.join('|')})`, 'gi'), match => `<span class="highlight">${match}</span>`);
+
+        paragraph.innerHTML = highlightedText;
+    }
+
+    function clearHighlights(paragraph) {
+        if (paragraph) {
+            paragraph.innerHTML = paragraph.innerText;
+        } else {
+            const highlightedElements = document.querySelectorAll('.highlight');
+            highlightedElements.forEach(function (el) {
+                el.outerHTML = el.innerHTML; // Remove the <span> element but keep its content
+            });
+        }
+    }
+
+    function centerInViewport(element) {
+        const rect = element.getBoundingClientRect();
+        const scrollOffset = window.pageYOffset || document.documentElement.scrollTop;
+
+        const centerOffset = (rect.top + rect.bottom) / 2 + scrollOffset - window.innerHeight / 2;
+        window.scrollTo({ top: centerOffset, behavior: 'smooth' });
+    }
+});
+
 
 window.addEventListener('DOMContentLoaded', event => {
 
